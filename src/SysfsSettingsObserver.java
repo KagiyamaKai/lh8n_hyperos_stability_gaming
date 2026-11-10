@@ -39,6 +39,8 @@ public class SysfsSettingsObserver {
     private static final String CACHE_CHARGE_CMD = "/data/local/tmp/lh8n_charge_cmd";
     private static final String CACHE_STARTUP_BRIGHTNESS = "/data/local/tmp/lh8n_startup_brightness";
     private static final String CACHE_STARTUP_IMAX = "/data/local/tmp/lh8n_startup_imax";
+    private static final String CACHE_CHARGE_BRIGHTNESS = "/data/local/tmp/lh8n_charge_brightness";
+    private static final String CACHE_CHARGE_IMAX = "/data/local/tmp/lh8n_charge_imax";
 
     private static final IBinder sToken = new Binder();
     private static Object sSettingsProvider;
@@ -215,6 +217,8 @@ public class SysfsSettingsObserver {
         writeCacheIfChanged(CACHE_CHARGE_CMD, getSetting("global", "tran_led_charge_effect_cmd"));
         writeCacheIfChanged(CACHE_STARTUP_BRIGHTNESS, getSetting("global", "tran_led_startup_brightness"));
         writeCacheIfChanged(CACHE_STARTUP_IMAX, getSetting("global", "tran_led_startup_imax"));
+        writeCacheIfChanged(CACHE_CHARGE_BRIGHTNESS, getSetting("global", "tran_led_charge_brightness"));
+        writeCacheIfChanged(CACHE_CHARGE_IMAX, getSetting("global", "tran_led_charge_imax"));
     }
 
     private static void sendQuickChargeBroadcast(int type, int watts) {

@@ -155,6 +155,7 @@ setprop persist.sys.background_blur_keyguard_disabled false
         [ -z "$CHG_CMD" ] && CHG_CMD="00 02 01 00 00 00"
 
         CHG_BRIGHT=$(settings get global tran_led_charge_brightness 2>/dev/null)
+        [ -z "$CHG_BRIGHT" ] && [ -r /data/local/tmp/lh8n_charge_brightness ] && IFS= read -r CHG_BRIGHT < /data/local/tmp/lh8n_charge_brightness 2>/dev/null
         [ -z "$CHG_BRIGHT" ] && CHG_BRIGHT=70
         if [ "$CHG_BRIGHT" -le 0 ] 2>/dev/null; then
             echo "00 01 00 00 00 00" > /sys/led/led/tran_led_cmd 2>/dev/null
