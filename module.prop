@@ -1,0 +1,7 @@
+id=lh8n_hyperos_stability_gaming
+name=TECNO LH8n HyperOS Stability & Gaming Fix
+version=1.0.3
+versionCode=103
+author=Kagiyama
+description=Fixes kernel panics (Mali trans_stat 4KB slab overflow & AW22xxx rgb out-of-bounds), resolves SELinuxMMAC duplicate signer keeping system apps in u:r:zygote:s0 (also fixing MIUISystemUIPlugin clns library access), stops infinite 1s IVirtualHal/virtual wait loop in services.jar, optimizes 01_lh8n_sysfs.sh, aligns ART madvise & dex2oat cpuset/threads, unlocks high-FPS game frame rate, and tunes VM/memcg/ZRAM/UFS/uclamp for stable gaming on LH8n.
+
