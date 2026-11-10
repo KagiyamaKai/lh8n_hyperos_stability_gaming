@@ -29,5 +29,9 @@ echo "ged_smart_boost   : $(cat /sys/module/ged/parameters/ged_smart_boost 2>/de
 echo "dex2oat cpus/thrd : cpus=$(cat /dev/cpuset/dex2oat/cpus 2>/dev/null) bg_threads=$(getprop dalvik.vm.background-dex2oat-threads) cpu_set=$(getprop dalvik.vm.background-dex2oat-cpu-set)"
 echo "ART madvise       : vdex=$(getprop dalvik.vm.madvise.vdexfile.size) odex=$(getprop dalvik.vm.madvise.odexfile.size) art=$(getprop dalvik.vm.madvise.artfile.size)"
 echo "memcg apps swap   : $(cat /dev/memcg/apps/memory.swappiness 2>/dev/null) (vendor.zram.disable='$(getprop vendor.zram.disable)')"
+OBS_PID=$(pgrep -f "SysfsSettingsObserver" 2>/dev/null | head -n 1)
+BYP_PID=$(pgrep -f "BypassIslandDaemon" 2>/dev/null | head -n 1)
+INIT_AVC=$(dmesg 2>/dev/null | grep -c 'scontext=u:r:init:s0.*01_lh8n_sysfs' || true)
+echo "Daemons           : SysfsObserver=${OBS_PID:-stopped} | BypassDaemon=${BYP_PID:-stopped} | init-01-avc=${INIT_AVC}"
 echo "=============================================="
 

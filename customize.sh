@@ -3,7 +3,7 @@ SKIPUNZIP=0
 
 ui_print "***********************************************"
 ui_print "*  TECNO LH8n HyperOS Stability & Gaming Fix  *"
-ui_print "*             v1.0.3  (By Kagiyama)           *"
+ui_print "*             v1.0.4  (By Kagiyama)           *"
 ui_print "***********************************************"
 
 ui_print "- Setting module permissions & SELinux contexts..."
@@ -35,6 +35,13 @@ for node in /sys/class/leds/aw22xxx_led/rgb /sys/devices/platform/11d21000.i2c/i
         chmod 0640 "$node" 2>/dev/null || true
     fi
 done
+
+# Start/restart zero-fork SysfsSettingsObserver if already booted
+pkill -f "SysfsSettingsObserver" 2>/dev/null || true
+if [ "$(getprop sys.boot_completed)" = "1" ] && [ -f "$MODPATH/lh8n_observer.dex" ]; then
+    cd /
+    nohup /system/bin/app_process -Djava.class.path="$MODPATH/lh8n_observer.dex" /system/bin SysfsSettingsObserver >/dev/null 2>&1 &
+fi
 
 ui_print "- Stability & Gaming module installed."
 ui_print "- Reboot to activate SELinuxMMAC, IVirtualHal, & SurfaceFlinger fixes!"

@@ -1,6 +1,6 @@
 # TECNO LH8n HyperOS Stability & Gaming Fix
 
-KernelSU / Magisk root module (`v1.0.3`, author: **Kagiyama**) targeting HyperOS 3.x ports on the **TECNO POVA 5 Pro 5G (`LH8n` / MT6833 / V792 vendor)**.
+KernelSU / Magisk root module (`v1.0.4`, author: **Kagiyama**) targeting HyperOS 3.x ports on the **TECNO POVA 5 Pro 5G (`LH8n` / MT6833 / V792 vendor)**.
 
 ## What It Fixes & Tunes
 
@@ -12,8 +12,9 @@ KernelSU / Magisk root module (`v1.0.3`, author: **Kagiyama**) targeting HyperOS
   - Supports metamodule-less KernelSU Next bind-mounting directly in `post-fs-data.sh` with ART dalvik-cache invalidation tracking (`TARGET_VER="102"`).
 - **Patched `services.jar`:**
   - Stops the infinite 1-second `IVirtualHal/virtual` retry loop.
-- **Optimized LightBelt Early-Boot Daemon (`system/vendor/bin/01_lh8n_sysfs.sh`):**
-  - Adds the `aw22xxx_led/rgb` `0640` safety guard, replaces repeated `cat` subshell forks with shell `read`, reads `tran_led_startup_cmd`, and polls every 3s with throttled sync cadence.
+- **Zero-Fork Sysfs & Settings Observer (`lh8n_observer.dex`, `src/SysfsSettingsObserver.java`, `system/vendor/bin/01_lh8n_sysfs.sh`):**
+  - Keeps `01_lh8n_sysfs.sh` strictly for early-boot permissions/startup LED playback and boot completion handoff before idling silently (`sleep 3600`), eliminating continuous `settings` `app_process` forks and `u:r:init:s0` SELinux `audit_lost` bursts.
+  - Offloads Reading Mode (`night_display_activated`), Refresh Rate (`min/peak_refresh_rate`), LightBelt `/data/local/tmp/lh8n_*` cache sync, 70°C thermal watchdog, `/data/local/tmp/lh8n_cmd` handling, and `Os.stat`-guarded permission enforcement cleanly into `SysfsSettingsObserver` (`service.sh`, `u:r:ksu:s0`) via cached `IContentProvider` Binder calls.
 - **Dalvik / ART & Frame Rate (`system.prop`):**
   - `persist.graphics.game_default_frame_rate.enabled=false` and `ro.surface_flinger.game_default_frame_rate_override=0`
   - `dalvik.vm.image-dex2oat-cpu-set=0,1,2,3,4,5`, `dalvik.vm.background-dex2oat-cpu-set=0,1,2,3,4,5`, `dalvik.vm.background-dex2oat-threads=4`
@@ -28,7 +29,7 @@ KernelSU / Magisk root module (`v1.0.3`, author: **Kagiyama**) targeting HyperOS
 python build.py
 ```
 
-Generates `LH8n_HyperOS_Stability_Gaming_v1.0.3.zip`.
+Generates `LH8n_HyperOS_Stability_Gaming_v1.0.4.zip`.
 
 ## Diagnostics
 

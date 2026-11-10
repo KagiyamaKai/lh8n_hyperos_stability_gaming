@@ -19,6 +19,13 @@ while [ "$(getprop sys.boot_completed)" != "1" ] && [ "$i" -lt 120 ]; do
     i=$((i + 1))
 done
 
+# Launch zero-fork Settings Sync & Sysfs Watchdog under u:r:ksu:s0 (eliminates init AVC bursts)
+pkill -f "SysfsSettingsObserver" 2>/dev/null || true
+if [ -f "$MODDIR/lh8n_observer.dex" ]; then
+    cd /
+    nohup /system/bin/app_process -Djava.class.path="$MODDIR/lh8n_observer.dex" /system/bin SysfsSettingsObserver >/dev/null 2>&1 &
+fi
+
 # Re-assert once more post-boot in case vendor scripts touched permissions
 chmod 0000 /sys/devices/platform/13000000.mali/devfreq/13000000.mali/trans_stat 2>/dev/null
 for node in /sys/class/leds/aw22xxx_led/rgb /sys/devices/platform/11d21000.i2c/i2c-2/2-006a/leds/aw22xxx_led/rgb; do

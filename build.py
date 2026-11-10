@@ -2,7 +2,7 @@ import os, shutil, zipfile
 
 MOD_DIR = os.path.dirname(os.path.abspath(__file__))
 SCRATCH = r"C:\Users\Yakuzo\.gemini\antigravity\brain\da85a305-de7a-4549-b7dc-e0dc0b53d57f\scratch"
-ZIP_NAME = "LH8n_HyperOS_Stability_Gaming_v1.0.3.zip"
+ZIP_NAME = "LH8n_HyperOS_Stability_Gaming_v1.0.4.zip"
 
 # 1. Copy patched services.jar if scratch artifact is present; otherwise package checked-in jar
 fw_dst = os.path.join(MOD_DIR, "system", "framework", "services.jar")
@@ -25,12 +25,12 @@ for r, dirs, files in os.walk(MOD_DIR):
 
 # 3. Build flashable KernelSU zip
 os.chdir(MOD_DIR)
-exclude = {".git", ".gitignore", ".gitattributes", "README.md", "build.py", ZIP_NAME}
+exclude = {".git", ".gitignore", ".gitattributes", "README.md", "build.py", "src", ZIP_NAME}
 with zipfile.ZipFile(ZIP_NAME, "w", compression=zipfile.ZIP_DEFLATED) as z:
     for r, dirs, files in os.walk("."):
         dirs[:] = [d for d in dirs if d not in exclude and not d.startswith(".")]
         for f in files:
-            if f in exclude or f.startswith(".") or f.endswith((".zip", ".log")):
+            if f in exclude or f.startswith(".") or f.endswith((".zip", ".log", ".java", ".class")):
                 continue
             full_path = os.path.join(r, f)
             rel_path = os.path.relpath(full_path, ".").replace("\\", "/")
