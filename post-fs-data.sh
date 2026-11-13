@@ -63,7 +63,7 @@ chmod 0000 /sys/devices/platform/13000000.mali/devfreq/13000000.mali/trans_stat 
 for node in /sys/class/leds/aw22xxx_led/rgb /sys/devices/platform/11d21000.i2c/i2c-2/2-006a/leds/aw22xxx_led/rgb; do
     if [ -e "$node" ]; then
         chown root:system "$node" 2>/dev/null
-        chmod 0640 "$node" 2>/dev/null
+        chmod 0660 "$node" 2>/dev/null
     fi
 done
 

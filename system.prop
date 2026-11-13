@@ -2,6 +2,27 @@
 persist.graphics.game_default_frame_rate.enabled=false
 ro.surface_flinger.game_default_frame_rate_override=0
 
+# SurfaceFlinger 120Hz Balanced Frame Pacing (Smooth App Launches & AOD Transitions)
+debug.sf.high_fps.early.app.duration=12300000
+debug.sf.high_fps.early.sf.duration=11600000
+debug.sf.high_fps.earlyGl.app.duration=12300000
+debug.sf.high_fps.earlyGl.sf.duration=11600000
+debug.sf.high_fps.late.app.duration=8000000
+debug.sf.high_fps.late.sf.duration=8000000
+
+# Vendor Dynamic Duration 120Hz Overrides
+vendor.debug.sf.dynamic_duration.app.early.120=12300000
+vendor.debug.sf.dynamic_duration.app.earlyGl.120=12300000
+vendor.debug.sf.dynamic_duration.app.late.120=8000000
+vendor.debug.sf.dynamic_duration.sf.early.120=11600000
+vendor.debug.sf.dynamic_duration.sf.earlyGl.120=11600000
+vendor.debug.sf.dynamic_duration.sf.late.120=8000000
+
+# Buffer Management: Allow triple-buffering during heavy GPU blur/scale transitions on Mali-G57
+debug.sf.disable_backpressure=1
+debug.sf.enable_gl_backpressure=0
+debug.sf.predict_hwc_composition_strategy=0
+
 # Match dex2oat CPU set to all 6 Cortex-A55 cores (0-5) with 4 background threads
 dalvik.vm.image-dex2oat-cpu-set=0,1,2,3,4,5
 dalvik.vm.background-dex2oat-cpu-set=0,1,2,3,4,5
@@ -12,3 +33,14 @@ dalvik.vm.madvise.vdexfile.size=104857600
 dalvik.vm.madvise.odexfile.size=104857600
 dalvik.vm.madvise.artfile.size=8388608
 
+# Battery & Deep Sleep - Disable MTK Engineering Debuggers
+persist.vendor.em.dy.debug=0
+persist.vendor.connsys.coredump.mode=0
+persist.vendor.aee.core.dump=0
+persist.vendor.aee.core.direct=0
+persist.vendor.mdlog.enable=0
+persist.vendor.mobilelog.enable=0
+persist.vendor.connsyslogger.enable=0
+persist.vendor.mtklog.aee.mode=0
+persist.radio.add_power_save=1
+persist.vendor.radio.smart_rat=1

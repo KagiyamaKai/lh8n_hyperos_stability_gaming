@@ -302,9 +302,9 @@ public class SysfsSettingsObserver {
         for (String node : RGB_NODES) {
             try {
                 StructStat st = Os.stat(node);
-                if (st.st_uid != 0 || st.st_gid != 1000 || (st.st_mode & 0777) != 0640) {
+                if (st.st_uid != 0 || st.st_gid != 1000 || (st.st_mode & 0777) != 0660) {
                     Os.chown(node, 0, 1000);
-                    Os.chmod(node, 0640);
+                    Os.chmod(node, 0660);
                 }
             } catch (Throwable ignored) {}
         }
