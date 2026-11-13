@@ -1,6 +1,6 @@
 # TECNO LH8n HyperOS Stability & Gaming Fix
 
-KernelSU / Magisk root module (`v1.0.4`, author: **Kagiyama**) targeting HyperOS 3.x ports on the **TECNO POVA 5 Pro 5G (`LH8n` / MT6833 / V792 vendor)**.
+KernelSU / Magisk root module (`v1.0.4`, author: **Yakuzokai**) targeting HyperOS 3.x ports on the **TECNO POVA 5 Pro 5G (`LH8n` / MT6833 / V792 vendor)**.
 
 ## What It Fixes & Tunes
 

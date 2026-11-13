@@ -3,7 +3,7 @@ SKIPUNZIP=0
 
 ui_print "***********************************************"
 ui_print "*  TECNO LH8n HyperOS Stability & Gaming Fix  *"
-ui_print "*             v1.0.4  (By Kagiyama)           *"
+ui_print "*             v1.0.4  (By Yakuzokai)           *"
 ui_print "***********************************************"
 
 ui_print "- Setting module permissions & SELinux contexts..."
