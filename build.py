@@ -2,7 +2,7 @@ import os, shutil, zipfile
 
 MOD_DIR = os.path.dirname(os.path.abspath(__file__))
 SCRATCH = r"C:\Users\Yakuzo\.gemini\antigravity\brain\da85a305-de7a-4549-b7dc-e0dc0b53d57f\scratch"
-ZIP_NAME = "LH8n_HyperOS_Stability_Gaming_v1.0.6.zip"
+ZIP_NAME = "LH8n_HyperOS_Stability_Gaming_v1.0.7.zip"
 
 # 1. Copy patched services.jar if scratch artifact is present; otherwise package checked-in jar
 fw_dst = os.path.join(MOD_DIR, "system", "framework", "services.jar")
