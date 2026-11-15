@@ -1,3 +1,4 @@
+# Ignore build archives
 *.zip
 *.log
 *.pyc
@@ -5,3 +6,12 @@
 __pycache__/
 .DS_Store
 .cache_*
+
+# GitHub Policy: Ignore proprietary framework binaries and packages
+*.apk
+*.jar
+*.dex
+system/framework/*.jar
+system/system_ext/priv-app/
+system/priv-app/
+/bin/

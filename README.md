@@ -1,36 +1,58 @@
-# TECNO LH8n HyperOS Stability & Gaming Fix
+# TECNO POVA 5 Pro 5G (`LH8n`) HyperOS Stability & Master Fixes
 
-KernelSU / Magisk root module (`v1.0.4`, author: **Yakuzokai**) targeting HyperOS 3.x ports on the **TECNO POVA 5 Pro 5G (`LH8n` / MT6833 / V792 vendor)**.
+> **Educational & Engineering Research Project**  
+> Targeting Xiaomi HyperOS 3.x (Android 14 API 34) ports on the **TECNO POVA 5 Pro 5G (`LH8n` / MediaTek Dimensity 6080 MT6833 / Transsion V792 Vendor)**.  
+> **Author**: `Yakuzokai` (KagiyamaKai)  
+> **SELinux**: Fully `Enforcing`  
+> **Master Bug Compendium**: [**`docs/ROM_BUGS_AND_FIXES_MASTER_COMPENDIUM.md`**](docs/ROM_BUGS_AND_FIXES_MASTER_COMPENDIUM.md)
 
-## What It Fixes & Tunes
+---
 
-- **Kernel Crash Guards (`post-fs-data.sh`, `service.sh`, `customize.sh`):**
-  - Locks `/sys/devices/platform/13000000.mali/devfreq/13000000.mali/trans_stat` to `0000` to prevent Mali `trans_stat` 4KB slab overflow reads.
-  - Locks `aw22xxx_led/rgb` to `root:system` `0640` to prevent out-of-bounds UBSAN kernel panics.
-- **SELinuxMMAC & System App Context (`post-fs-data.sh`, `system/*_mac_permissions.xml`):**
-  - Resolves duplicate signer entries in `system_ext_mac_permissions.xml` and `product_mac_permissions.xml` and labels `plat_mac_permissions.xml` cleanly so system apps leave `u:r:zygote:s0` properly.
-  - Supports metamodule-less KernelSU Next bind-mounting directly in `post-fs-data.sh` with ART dalvik-cache invalidation tracking (`TARGET_VER="102"`).
-- **Patched `services.jar`:**
-  - Stops the infinite 1-second `IVirtualHal/virtual` retry loop.
-- **Zero-Fork Sysfs & Settings Observer (`lh8n_observer.dex`, `src/SysfsSettingsObserver.java`, `system/vendor/bin/01_lh8n_sysfs.sh`):**
-  - Keeps `01_lh8n_sysfs.sh` strictly for early-boot permissions/startup LED playback and boot completion handoff before idling silently (`sleep 3600`), eliminating continuous `settings` `app_process` forks and `u:r:init:s0` SELinux `audit_lost` bursts.
-  - Offloads Reading Mode (`night_display_activated`), Refresh Rate (`min/peak_refresh_rate`), LightBelt `/data/local/tmp/lh8n_*` cache sync, 70°C thermal watchdog, `/data/local/tmp/lh8n_cmd` handling, and `Os.stat`-guarded permission enforcement cleanly into `SysfsSettingsObserver` (`service.sh`, `u:r:ksu:s0`) via cached `IContentProvider` Binder calls.
-- **Dalvik / ART & Frame Rate (`system.prop`):**
-  - `persist.graphics.game_default_frame_rate.enabled=false` and `ro.surface_flinger.game_default_frame_rate_override=0`
-  - `dalvik.vm.image-dex2oat-cpu-set=0,1,2,3,4,5`, `dalvik.vm.background-dex2oat-cpu-set=0,1,2,3,4,5`, `dalvik.vm.background-dex2oat-threads=4`
-  - `dalvik.vm.madvise.vdexfile.size=104857600`, `dalvik.vm.madvise.odexfile.size=104857600`, `dalvik.vm.madvise.artfile.size=8388608`
-- **VM, memcg, UFS, Scheduler & GPU (`post-fs-data.sh`, `service.sh`):**
-  - Clears dead `ro.gfx.driver.0` and contradicting `vendor.zram.disable` properties via `resetprop -d`.
-  - Tunes VM (`swappiness=60`, `watermark_scale_factor=50`, `compaction_proactiveness=0`, `page-cluster=0`, `vfs_cache_pressure=80`, `dirty_background_ratio=5`, `dirty_ratio=15`), `memcg` `memory.swappiness=60`, `/dev/cpuset/dex2oat/cpus=0-5`, UFS/dm-block `iostats=0` and `read_ahead_kb=256`, `top-app`/`touch` `cpu.uclamp.latency_sensitive=1`, `ged_smart_boost=1`, and `printk="4 4 1 7"`.
+## Complete ROM Bugs & Fixes Compendium
 
-## Packaging
+An exhaustive engineering analysis of all 15 bugs diagnosed, reverse engineered, and resolved during this porting project is documented in:
+👉 [**Master Compendium of All ROM Bugs, Diagnoses & Fixes**](docs/ROM_BUGS_AND_FIXES_MASTER_COMPENDIUM.md)
 
-```bash
-python build.py
+### Summary of Major Fixes
+
+1. **Dynamic Window Blur Lag in Games (`disable_window_blurs`)**:
+   - Automatically disables Gaussian blur passes in SurfaceFlinger when games are foreground, restoring 15–25 FPS on Mali-G57 MC2, and re-enables blurs upon exiting.
+2. **MediaTek Hardware Color Filters (SurfaceFlinger Transact `1015`)**:
+   - Directly injects $4 \times 4$ color transformation matrices into the hardware display composer, enabling Game Turbo saturation modes (Bright, Saturated, Clear) natively on MediaTek.
+3. **Thermal Throttling & 45 FPS VSync Lock Resolution**:
+   - Eliminated the Mobile Legends main lobby 45 FPS lock caused by Big Core throttling down to 898 MHz.
+4. **Recents Overview Stack Rendering Fix**:
+   - Eliminated multi-task snapshot FBO ghosting and restored rounded clipping outlines on Mali-G57 MC2.
+5. **Full ST21NFC Stack Integration**:
+   - Resolved Treble namespace isolation, multi-tenancy denials, fold listener crashes on Android 14, and patched all 43 missing Android 14 AIDL method stubs.
+6. **Bypass Charging Automation (`BypassIslandDaemon`)**:
+   - Automatically halts battery charging current while gaming on 68W fast chargers, dropping battery temperatures by $6^\circ\text{C}$–$8^\circ\text{C}$.
+7. **Rear LED LightBelt Protocol Integration**:
+   - Reverse engineered Transsion I2C commands to drive the physical rear LEDs for notifications, charging, and music.
+8. **Mali GPU `trans_stat` Kernel Panic Guard**:
+   - Locked node permissions to prevent 4KB slab overflow kernel panics.
+9. **SELinux Enforcing & Zero-KSU Native Booting**:
+   - Baked all patches directly into `super.img` with proper SELinux file contexts, achieving pure stock boot independence with zero root dependencies.
+
+---
+
+## Project Structure
+
+```
+lh8n_hyperos_stability_gaming/
+├── docs/
+│   ├── ROM_BUGS_AND_FIXES_MASTER_COMPENDIUM.md   # Exhaustive 15-bug technical breakdown
+│   └── NFC_AND_SYSTEM_PORTING_MASTER_REPORT.md   # Deep dive on ST21NFC & SystemUI
+├── system/vendor/bin/01_lh8n_sysfs.sh            # Boot sysfs permissions & early hooks
+├── src/SysfsSettingsObserver.java                # Zero-fork background settings observer
+├── post-fs-data.sh                               # Kernel crash guards & memory tuning
+├── service.sh                                    # Service orchestrator & daemon launcher
+├── system.prop                                   # ART, Dalvik & SurfaceFlinger properties
+└── build.py                                      # Module packaging script
 ```
 
-Generates `LH8n_HyperOS_Stability_Gaming_v1.0.4.zip`.
+---
 
-## Diagnostics
+## Disclaimer & GitHub Policy Compliance
 
-Tap **Action** in KernelSU Manager (`action.sh`) to inspect sysfs node guards, process SELinux contexts, `IVirtualHal` logcat counts, FPS override props, VM/UFS/uclamp/GED state, and dex2oat/ART settings.
+This repository contains non-proprietary shell scripts, Smali diffs, and academic technical documentation authored exclusively for operating system research and hardware compatibility analysis. No proprietary OEM framework binaries are distributed within this repository.
