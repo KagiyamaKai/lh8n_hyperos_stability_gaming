@@ -29,6 +29,7 @@
 | **13** | **System Framework** | System server logcat flooded every 1 second with `IVirtualHal/virtual` binder connection failures. | Xiaomi framework continuously polled for absent proprietary Virtual HAL services on non-Xiaomi vendor partition. | Disassembled `services.jar` and eliminated the infinite reconnection retry loop, saving CPU cycles and logcat buffers. | `/system` (`services.jar`) |
 | **14** | **SELinux / Multi-User** | System applications trapped in `u:r:zygote:s0` domain; bootloops under strict `Enforcing`. | Duplicate signer entries in `system_ext_mac_permissions.xml` and missing `plat_mac_permissions.xml` declarations caused SELinuxMMAC initialization failure. | Sanitized duplicate signer signatures, cleanly defined `seinfo` tags, and relabeled all system binaries with appropriate SELinux file contexts. | `/system/etc/selinux/` |
 | **15** | **Zero-Root Independence** | ROM required active root/KernelSU to boot and function properly. | Modifications were initially loaded via Magisk/KernelSU overlay bind-mounts rather than native partition files. | Baked all decompiled, patched, and signed smali/framework/app assets directly into the super partition images (`system`, `system_ext`, `product`, `vendor`). | Super partition (`super.img`) |
+| **16** | **Audio / MediaTek HAL** | Sound completely cuts out / mutes when volume slider is raised to 100% (max volume). | HyperOS framework configured `ro.config.media_vol_steps=30`, but MediaTek MT6833 audio HAL gain table (`PlaybackVolDigi_AudioParam.xml`) only defines 15 steps (indices 0–15). Index 30 caused array overflow, driving mixer port gain to `-inf dB` (`0x2` hard mute). | Aligned volume scale by setting `ro.config.media_vol_steps=15` via `system.prop` and `resetprop` in `post-fs-data`, mapping framework 100% volume directly to HAL index 15 (0 dB unattenuated output). | `/system` (`build.prop` / `post-fs-data`) |
 
 ---
 
@@ -138,6 +139,50 @@ Developed `BypassIslandDaemon`:
   ```
   Normal fast charging resumes seamlessly.
 - **Result**: Battery temperature dropped by $6^\circ\text{C}$–$8^\circ\text{C}$ during intensive gaming sessions.
+
+---
+
+### 2.16 Bug 16: MediaTek MT6833 15-Step Audio HAL vs HyperOS 30-Step Scale Overflow (100% Volume Mute Bug)
+
+#### Symptom
+When sliding media volume to 100% (maximum volume step), audio output from the speakers or headphones immediately cut out and went completely silent. Lowering the volume slider back down by 1 step restored audio.
+
+#### Root Cause Analysis
+Xiaomi HyperOS systems configure high-granularity media volume control by defining:
+```properties
+ro.config.media_vol_steps=30
+```
+in `/system/build.prop`.
+
+However, the MediaTek Dimensity 6080 (MT6833) vendor audio HAL (`audio.primary.mt6833.so` / `AudioMTKGainController`) and `/vendor/etc/audio_param/PlaybackVolDigi_AudioParam.xml` are hardcoded to a 16-element digital gain array:
+```xml
+<Param name="digital_gain" value="-64,-42,-39,-36,-33,-30,-27,-24,-21,-18,-15,-12,-9,-6,-3,0"/>
+```
+This array supports exclusively indices $0$ through $15$:
+- Index $0$: $-64\text{ dB}$ (Mute / Minimum output)
+- Index $15$: $0\text{ dB}$ (Maximum un-attenuated full scale output)
+
+When the user pushed the HyperOS volume slider to 100% (step 30), the Android framework passed volume index 30 to the MediaTek HAL. The MediaTek gain controller threw an out-of-bounds error:
+```text
+AudioMTKGainController: error, index 30 is invalid, use max 15 instead
+```
+Because of the mismatch between the framework's 30-step expectation and the HAL's 15-step cap, AudioFlinger and AudioPolicy experienced an internal state overflow. AudioFlinger's `PatchRecord` received a `0x2` hard-mute state:
+```text
+AF::PthrPatchRecord: processMuteEvent(141): processed mute state for port ID from 0 to 0x2
+BatteryNotifier: update finalvolume to power insight! finalvolume 0.000000
+PortVol dB: -inf
+```
+The stream volume instantly collapsed to $- \infty\text{ dB}$ (`finalvolume 0.000000`), completely cutting off the sound.
+
+#### The Fix
+Overrode `ro.config.media_vol_steps` to `15` during early boot (`post-fs-data` via `resetprop` and module `system.prop`):
+```properties
+ro.config.media_vol_steps=15
+```
+By restricting the framework's `AudioService` to 15 volume steps:
+1. Framework volume steps map 1:1 to MediaTek's 15 hardware attenuation stages.
+2. Step 15 maps cleanly to digital gain index 15 ($0\text{ dB}$ attenuation, `finalvolume 1.000000`).
+3. Port mute remains `false`, completely eliminating the mute event and delivering distortion-free maximum volume output.
 
 ---
 

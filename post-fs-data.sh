@@ -71,5 +71,6 @@ done
 if command -v resetprop >/dev/null 2>&1; then
     resetprop -d ro.gfx.driver.0 2>/dev/null
     resetprop -d vendor.zram.disable 2>/dev/null
+    resetprop -n ro.config.media_vol_steps 15 2>/dev/null
 fi
 

@@ -44,3 +44,7 @@ persist.vendor.connsyslogger.enable=0
 persist.vendor.mtklog.aee.mode=0
 persist.radio.add_power_save=1
 persist.vendor.radio.smart_rat=1
+
+# MediaTek MT6833 15-Step Audio HAL Gain Curve Alignment (Fixes 100% volume mute bug)
+ro.config.media_vol_steps=15
+

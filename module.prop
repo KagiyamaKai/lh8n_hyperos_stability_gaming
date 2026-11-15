@@ -1,6 +1,6 @@
 id=lh8n_hyperos_stability_gaming
 name=TECNO POVA 5 Pro - Stability, Gaming & Battery Fix
-version=1.0.8
-versionCode=108
+version=1.0.9
+versionCode=109
 author=Yakuzokai
-description=Zero-KernelSU ROM stability, gaming, battery & NFC fix for TECNO POVA 5 Pro 5G (LH8n) on HyperOS. Full NFC stack restore with Android 14 StApduServiceInfo fix, native HyperOS Settings NFC page integration, neutralizes Mali trans_stat and aw22xxx RGB panics, eliminates IVirtualHal stalls, fixes SELinuxMMAC/clns-14 libMiMainColor, uncaps 120Hz gaming, aligns ART madvise, tunes UFS/ZRAM/GED, disables MTK engineering loggers with Fast-Doze deep sleep, and enforces 240Hz FT8726 TDDI touch responsiveness with 6.5ms SurfaceFlinger frame pacing and EAS CPU frequency ramp.
+description=Zero-KernelSU ROM stability, gaming, battery & NFC fix for TECNO POVA 5 Pro 5G (LH8n) on HyperOS. Fixes 100% volume mute/sound loss via MTK 15-step Audio HAL alignment, full NFC stack restore with Android 14 StApduServiceInfo fix, native HyperOS Settings NFC page integration, neutralizes Mali trans_stat and aw22xxx RGB panics, eliminates IVirtualHal stalls, fixes SELinuxMMAC/clns-14 libMiMainColor, uncaps 120Hz gaming, aligns ART madvise, tunes UFS/ZRAM/GED, disables MTK engineering loggers with Fast-Doze deep sleep, and enforces 240Hz FT8726 TDDI touch responsiveness with 6.5ms SurfaceFlinger frame pacing and EAS CPU frequency ramp.
